@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de anexo</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #FA8DDC;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #form-section, #user-list-section {
+            width: 90%;
+            max-width: 400px;
+            margin: 20px;
+            padding: 20px;
+            background-color: #D6B9F4;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        label, input, button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            font-size: 1em;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .user-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 8px;
+            background-color: hsl(163, 64%, 70%);
+            border-radius: 4px;
+            margin: 5px 0;
+            font-size: 1em;
+        }
+
+        .user-details, .user-actions {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .delete-btn, .edit-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .edit-btn {
+            background-color: orange;
+            margin-right: 5px;
+        }
+
+        .counter {
+            font-size: 0.9em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Registro de Usuarios</h1>
+
+    <section id="form-section">
+        <h2>Alta de Usuario</h2>
+        <form id="user-form">
+            <label for="name">Nombre:</label>
+            <input type="text" id="name" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+            <label for="phone">Teléfono:</label>
+            <input type="tel" id="phone" required>
+            <label for="age">Edad:</label>
+            <input type="number" id="age" required min="1">
+            <label for="address">Dirección:</label>
+            <input type="text" id="address" required>
+            <button type="submit">Agregar Usuario</button>
+        </form>
+    </section>
+
+    <section id="user-list-section">
+        <h2>Lista de Usuarios</h2>
+        <p class="counter">Total de Usuarios: <span id="user-count">0</span></p>
+        <ul id="user-list"></ul>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userForm = document.getElementById('user-form');
+            const userList = document.getElementById('user-list');
+            const userCount = document.getElementById('user-count');
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+
+            // Función para renderizar usuarios
+            function renderUsers() {
+                userList.innerHTML = '';
+                users.forEach((user, index) => {
+                    const userItem = document.createElement('li');
+                    userItem.className = 'user-item';
+                    userItem.innerHTML = `
+                        <div class="user-details">
+                            <span><strong>Nombre:</strong> ${user.name}</span>
+                            <span><strong>Email:</strong> ${user.email}</span>
+                            <span><strong>Teléfono:</strong> ${user.phone}</span>
+                            <span><strong>Edad:</strong> ${user.age}</span>
+                            <span><strong>Dirección:</strong> ${user.address}</span>
+                        </div>
+                        <div class="user-actions">
+                            <button class="edit-btn" data-index="${index}">Editar</button>
+                            <button class="delete-btn" data-index="${index}">Eliminar</button>
+                        </div>
+                    `;
+                    userList.appendChild(userItem);
+                });
+                userCount.textContent = users.length;
+                attachEventListeners();
+            }
+
+            // Función para añadir usuario
+            function addUser(name, email, phone, age, address) {
+                users.push({ name, email, phone, age, address });
+                localStorage.setItem('users', JSON.stringify(users));
+                renderUsers();
+            }
+
+            // Función para eliminar usuario
+            function deleteUser(index) {
+                users.splice(index, 1);
+                localStorage.setItem('users', JSON.stringify(users));
+                renderUsers();
+            }
+
+            // Función para editar usuario
+            function editUser(index) {
+                const user = users[index];
+                document.getElementById('name').value = user.name;
+                document.getElementById('email').value = user.email;
+                document.getElementById('phone').value = user.phone;
+                document.getElementById('age').value = user.age;
+                document.getElementById('address').value = user.address;
+                userForm.dataset.editing = index;
+            }
+
+            // Función para manejar el submit del formulario
+            userForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const age = document.getElementById('age').value.trim();
+                const address = document.getElementById('address').value.trim();
+
+                if (!name || !email || !phone || !age || !address) 
+                    return alert("Por favor, complete todos los campos.");
+
+                const editingIndex = userForm.dataset.editing;
+                if (editingIndex !== undefined) {
+                    users[editingIndex] = { name, email, phone, age, address };
+                    delete userForm.dataset.editing;
+                } else {
+                    addUser(name, email, phone, age, address);
+                }
+
+                userForm.reset();
+                localStorage.setItem('users', JSON.stringify(users));
+                renderUsers();
+            });
+
+            // Función para añadir event listeners a los botones de editar y eliminar
+            function attachEventListeners() {
+                const deleteButtons = document.querySelectorAll('.delete-btn');
+                const editButtons = document.querySelectorAll('.edit-btn');
+
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.dataset.index;
+                        deleteUser(index);
+                    });
+                });
+
+                editButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.dataset.index;
+                        editUser(index);
+                    });
+                });
+            }
+
+            // Cargar usuarios al iniciar
+            renderUsers();
+        });
+    </script>
+</body>
+</html>
+

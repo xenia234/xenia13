@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Usuarios</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center">CRUD de Usuarios</h2>
+    
+
+    <form action="" method="POST" class="mb-4">
+        <div class="form-group">
+            <label for="Nombre">Nombre:</label>
+            <input type="text" name="Nombre" id="Nombre" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="Ap_paterno">Apellido Paterno:</label>
+            <input type="text" name="Ap_paterno" id="Ap_paterno" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="Ap_materno">Apellido Materno:</label>
+            <input type="text" name="Ap_materno" id="Ap_materno" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="Correo">Correo:</label>
+            <input type="email" name="Correo" id="Correo" class="form-control" required>
+        </div>
+        <button type="submit" name="btnregistrar" class="btn btn-primary">Registrar</button>
+    </form>
+
+
+    <h3>Lista de Usuarios</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>Correo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+</body>
+</html>
